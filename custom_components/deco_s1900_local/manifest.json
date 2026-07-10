@@ -7,9 +7,9 @@
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/simone-losito/deco-s1900-local",
-  "issue_tracker": "https://github.com/simone-losito/deco-s1900-local/issues",
+  "integration_type": "hub",
   "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/simone-losito/deco-s1900-local/issues",
   "requirements": [],
-  "version": "11.0.0",
-  "integration_type": "hub"
+  "version": "11.0.0"
 }
