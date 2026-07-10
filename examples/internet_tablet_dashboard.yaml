@@ -1,0 +1,557 @@
+type: sections
+max_columns: 4
+title: Internet
+path: internet
+icon: mdi:wifi
+theme: synthwave
+dense_section_placement: true
+
+sections:
+  # ─────────────────────────────────────────────
+  # INTERNET
+  # ─────────────────────────────────────────────
+  - type: grid
+    cards:
+      - type: custom:mushroom-template-card
+        entity: binary_sensor.fritz_box_5530_fiber_connessione
+        primary: >
+          {% set conn = is_state('binary_sensor.fritz_box_5530_fiber_connessione', 'on') %}
+          {% set link = is_state('binary_sensor.fritz_box_5530_fiber_collegamento', 'on') %}
+          {% if conn and link %}
+            🌐 Internet Online
+          {% elif conn %}
+            ⚠️ Internet attivo
+          {% else %}
+            🔴 Internet Offline
+          {% endif %}
+        secondary: >
+          {% set hall = states('sensor.deco_hallway_clients_online') | int(0) %}
+          {% set bed = states('sensor.deco_bedroom_clients_online') | int(0) %}
+          {% set living = states('sensor.deco_living_room_clients_online') | int(0) %}
+          IP {{ states('sensor.fritz_box_5530_fiber_ip_esterno') }} •
+          {{ hall + bed + living }} dispositivi collegati alla mesh
+        icon: mdi:earth
+        icon_color: >
+          {% if is_state('binary_sensor.fritz_box_5530_fiber_connessione', 'on')
+             and is_state('binary_sensor.fritz_box_5530_fiber_collegamento', 'on') %}
+            green
+          {% elif is_state('binary_sensor.fritz_box_5530_fiber_connessione', 'on') %}
+            amber
+          {% else %}
+            red
+          {% endif %}
+        layout: horizontal
+        multiline_secondary: true
+        fill_container: true
+        tap_action:
+          action: more-info
+
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: template
+            icon: mdi:earth
+            content: "{{ states('sensor.fritz_box_5530_fiber_ip_esterno') }}"
+            icon_color: cyan
+          - type: template
+            icon: mdi:lan-connect
+            content: >
+              {% if is_state('binary_sensor.fritz_box_5530_fiber_collegamento', 'on') %}
+                Linea OK
+              {% else %}
+                Linea KO
+              {% endif %}
+            icon_color: >
+              {% if is_state('binary_sensor.fritz_box_5530_fiber_collegamento', 'on') %}
+                green
+              {% else %}
+                red
+              {% endif %}
+          - type: template
+            icon: mdi:router-wireless
+            content: 3 Deco
+            icon_color: cyan
+          - type: template
+            icon: mdi:account-network
+            content: >
+              {% set hall = states('sensor.deco_hallway_clients_online') | int(0) %}
+              {% set bed = states('sensor.deco_bedroom_clients_online') | int(0) %}
+              {% set living = states('sensor.deco_living_room_clients_online') | int(0) %}
+              {{ hall + bed + living }} online
+            icon_color: green
+
+  # ─────────────────────────────────────────────
+  # FRITZ!BOX
+  # ─────────────────────────────────────────────
+  - type: grid
+    cards:
+      - type: custom:mushroom-title-card
+        title: 📡 FRITZ!Box 5530
+        subtitle: Stato modem e linea
+
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: custom:mushroom-template-card
+            entity: binary_sensor.fritz_box_5530_fiber_connessione
+            primary: Connessione
+            secondary: >
+              {% if is_state('binary_sensor.fritz_box_5530_fiber_connessione', 'on') %}
+                Online
+              {% else %}
+                Offline
+              {% endif %}
+            icon: mdi:web
+            icon_color: >
+              {% if is_state('binary_sensor.fritz_box_5530_fiber_connessione', 'on') %}
+                green
+              {% else %}
+                red
+              {% endif %}
+
+          - type: custom:mushroom-template-card
+            entity: binary_sensor.fritz_box_5530_fiber_collegamento
+            primary: Collegamento
+            secondary: >
+              {% if is_state('binary_sensor.fritz_box_5530_fiber_collegamento', 'on') %}
+                Collegato
+              {% else %}
+                Non collegato
+              {% endif %}
+            icon: mdi:lan-connect
+            icon_color: >
+              {% if is_state('binary_sensor.fritz_box_5530_fiber_collegamento', 'on') %}
+                green
+              {% else %}
+                red
+              {% endif %}
+
+          - type: custom:mushroom-entity-card
+            entity: sensor.fritz_box_5530_fiber_ip_esterno
+            name: IP esterno
+            icon: mdi:earth
+            icon_color: cyan
+
+          - type: custom:mushroom-entity-card
+            entity: update.fritz_box_5530_fiber_fritz_os
+            name: FRITZ!OS
+            icon: mdi:update
+            icon_color: purple
+
+  # ─────────────────────────────────────────────
+  # WI-FI
+  # ─────────────────────────────────────────────
+  - type: grid
+    cards:
+      - type: custom:mushroom-title-card
+        title: 📶 Wi‑Fi FRITZ!Box
+        subtitle: Controllo reti radio
+
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: custom:mushroom-template-card
+            entity: switch.fritz_box_5530_fiber_wi_fi_mimmo_2_4ghz
+            primary: Wi‑Fi 2.4 GHz
+            secondary: >
+              {% if is_state('switch.fritz_box_5530_fiber_wi_fi_mimmo_2_4ghz', 'on') %}
+                Attivo
+              {% else %}
+                Spento
+              {% endif %}
+            icon: mdi:wifi
+            icon_color: >
+              {% if is_state('switch.fritz_box_5530_fiber_wi_fi_mimmo_2_4ghz', 'on') %}
+                green
+              {% else %}
+                disabled
+              {% endif %}
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            entity: switch.fritz_box_5530_fiber_wi_fi_mimmo_5ghz
+            primary: Wi‑Fi 5 GHz
+            secondary: >
+              {% if is_state('switch.fritz_box_5530_fiber_wi_fi_mimmo_5ghz', 'on') %}
+                Attivo
+              {% else %}
+                Spento
+              {% endif %}
+            icon: mdi:wifi
+            icon_color: >
+              {% if is_state('switch.fritz_box_5530_fiber_wi_fi_mimmo_5ghz', 'on') %}
+                green
+              {% else %}
+                disabled
+              {% endif %}
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            entity: switch.fritz_box_5530_fiber_wi_fi_mimmo_ospiti
+            primary: Wi‑Fi ospiti
+            secondary: >
+              {% if is_state('switch.fritz_box_5530_fiber_wi_fi_mimmo_ospiti', 'on') %}
+                Attivo
+              {% else %}
+                Spento
+              {% endif %}
+            icon: mdi:account-group
+            icon_color: >
+              {% if is_state('switch.fritz_box_5530_fiber_wi_fi_mimmo_ospiti', 'on') %}
+                amber
+              {% else %}
+                disabled
+              {% endif %}
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+
+          - type: picture-entity
+            entity: image.fritz_box_5530_fiber_mimmo_ospiti
+            name: QR Wi‑Fi ospiti
+            show_name: true
+            show_state: false
+
+  # ─────────────────────────────────────────────
+  # COMANDI
+  # ─────────────────────────────────────────────
+  - type: grid
+    cards:
+      - type: custom:mushroom-title-card
+        title: 🛠️ Comandi rapidi
+        subtitle: FRITZ!Box e Deco
+
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: button.fritz_box_5530_fiber_riconnetti
+            name: Riconnetti
+            icon: mdi:connection
+            icon_color: cyan
+            tap_action:
+              action: toggle
+
+          - type: custom:mushroom-entity-card
+            entity: button.fritz_box_5530_fiber_riavvia
+            name: Riavvia FRITZ!
+            icon: mdi:restart
+            icon_color: red
+            tap_action:
+              action: toggle
+
+          - type: custom:mushroom-entity-card
+            entity: button.fritz_box_5530_fiber_pulizia
+            name: Pulizia
+            icon: mdi:broom
+            icon_color: amber
+            tap_action:
+              action: toggle
+
+          - type: custom:mushroom-entity-card
+            entity: button.fritz_box_5530_fiber_aggiornamento_del_firmware
+            name: Aggiorna FRITZ!OS
+            icon: mdi:cloud-download
+            icon_color: purple
+            tap_action:
+              action: toggle
+
+          - type: custom:mushroom-template-card
+            entity: switch.fritz_box_5530_fiber_port_forward_homeassistant
+            primary: Port Forward HA
+            secondary: >
+              {% if is_state('switch.fritz_box_5530_fiber_port_forward_homeassistant', 'on') %}
+                Attivo
+              {% else %}
+                Spento
+              {% endif %}
+            icon: mdi:router-network
+            icon_color: >
+              {% if is_state('switch.fritz_box_5530_fiber_port_forward_homeassistant', 'on') %}
+                green
+              {% else %}
+                disabled
+              {% endif %}
+            tap_action:
+              action: toggle
+
+          - type: custom:mushroom-template-card
+            entity: button.deco_refresh
+            primary: Aggiorna Deco
+            secondary: Lettura immediata
+            icon: mdi:refresh
+            icon_color: cyan
+            tap_action:
+              action: call-service
+              service: button.press
+              target:
+                entity_id: button.deco_refresh
+
+  # ─────────────────────────────────────────────
+  # DECO - RIEPILOGO
+  # ─────────────────────────────────────────────
+  - type: grid
+    cards:
+      - type: custom:mushroom-title-card
+        title: 🧩 TP‑Link Deco Mesh
+        subtitle: Controller locale rete S1900
+
+      - type: custom:mushroom-template-card
+        primary: >
+          {% set h = states('sensor.deco_hallway_status') | lower %}
+          {% set b = states('sensor.deco_bedroom_status') | lower %}
+          {% set l = states('sensor.deco_living_room_status') | lower %}
+          {% if h == 'connected' and b == 'connected' and l == 'connected' %}
+            Mesh operativa
+          {% else %}
+            Mesh da controllare
+          {% endif %}
+        secondary: >
+          {% set hall = states('sensor.deco_hallway_clients_online') | int(0) %}
+          {% set bed = states('sensor.deco_bedroom_clients_online') | int(0) %}
+          {% set living = states('sensor.deco_living_room_clients_online') | int(0) %}
+          3 nodi • {{ hall + bed + living }} client online
+        icon: mdi:router-wireless
+        icon_color: >
+          {% set h = states('sensor.deco_hallway_status') | lower %}
+          {% set b = states('sensor.deco_bedroom_status') | lower %}
+          {% set l = states('sensor.deco_living_room_status') | lower %}
+          {% if h == 'connected' and b == 'connected' and l == 'connected' %}
+            green
+          {% else %}
+            red
+          {% endif %}
+        layout: horizontal
+        multiline_secondary: true
+        fill_container: true
+
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: template
+            icon: mdi:access-point-network
+            content: Hallway
+            icon_color: >
+              {% if states('sensor.deco_hallway_status') | lower == 'connected' %}
+                green
+              {% else %}
+                red
+              {% endif %}
+          - type: template
+            icon: mdi:access-point-network
+            content: Camera
+            icon_color: >
+              {% if states('sensor.deco_bedroom_status') | lower == 'connected' %}
+                green
+              {% else %}
+                red
+              {% endif %}
+          - type: template
+            icon: mdi:access-point-network
+            content: Salotto
+            icon_color: >
+              {% if states('sensor.deco_living_room_status') | lower == 'connected' %}
+                green
+              {% else %}
+                red
+              {% endif %}
+
+  # ─────────────────────────────────────────────
+  # HALLWAY
+  # ─────────────────────────────────────────────
+  - type: grid
+    cards:
+      - type: custom:mushroom-template-card
+        entity: sensor.deco_hallway_clients_online
+        primary: 🚪 Hallway
+        secondary: >
+          Master • {{ states('sensor.deco_hallway_ip') }} •
+          {{ states('sensor.deco_hallway_clients_online') }} client
+        icon: mdi:access-point-network
+        icon_color: >
+          {% if states('sensor.deco_hallway_status') | lower == 'connected' %}
+            green
+          {% else %}
+            red
+          {% endif %}
+        layout: horizontal
+        multiline_secondary: true
+        fill_container: true
+        tap_action:
+          action: more-info
+
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: template
+            icon: mdi:connection
+            content: "{{ states('sensor.deco_hallway_connection') }}"
+            icon_color: cyan
+          - type: template
+            icon: mdi:signal
+            content: "{{ states('sensor.deco_hallway_quality') }}"
+            icon_color: green
+          - type: template
+            icon: mdi:source-branch
+            content: "{{ states('sensor.deco_hallway_parent_node') }}"
+            icon_color: purple
+
+      - type: markdown
+        title: Client collegati
+        content: |
+          {% set clients = state_attr('sensor.deco_hallway_clients_online', 'clients') or [] %}
+          {% if clients | count == 0 %}
+          _Nessun client collegato._
+          {% else %}
+          {% for c in clients %}
+          {% set tipo = (c.type or '') | lower %}
+          {% if 'phone' in tipo or 'mobile' in tipo %}📱
+          {% elif 'tablet' in tipo %}📟
+          {% elif 'tv' in tipo %}📺
+          {% elif 'laptop' in tipo or 'pc' in tipo or 'computer' in tipo %}💻
+          {% elif 'camera' in tipo %}📷
+          {% elif 'printer' in tipo %}🖨️
+          {% else %}🔹
+          {% endif %}
+          **{{ c.name or c.mac }}**  
+          `{{ c.ip or 'IP non disponibile' }}` · {{ c.connection or 'N/D' }} · {{ c.signal_quality or 'N/D' }}
+          {% endfor %}
+          {% endif %}
+
+  # ─────────────────────────────────────────────
+  # CAMERA
+  # ─────────────────────────────────────────────
+  - type: grid
+    cards:
+      - type: custom:mushroom-template-card
+        entity: sensor.deco_bedroom_clients_online
+        primary: 🛏 Camera da letto
+        secondary: >
+          {{ states('sensor.deco_bedroom_connection') }} •
+          {{ states('sensor.deco_bedroom_ip') }} •
+          {{ states('sensor.deco_bedroom_clients_online') }} client
+        icon: mdi:access-point-network
+        icon_color: >
+          {% if states('sensor.deco_bedroom_status') | lower == 'connected' %}
+            green
+          {% else %}
+            red
+          {% endif %}
+        layout: horizontal
+        multiline_secondary: true
+        fill_container: true
+        tap_action:
+          action: more-info
+
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: template
+            icon: mdi:connection
+            content: "{{ states('sensor.deco_bedroom_connection') }}"
+            icon_color: cyan
+          - type: template
+            icon: mdi:signal
+            content: "{{ states('sensor.deco_bedroom_quality') }}"
+            icon_color: green
+          - type: template
+            icon: mdi:source-branch
+            content: "{{ states('sensor.deco_bedroom_parent_node') }}"
+            icon_color: purple
+
+      - type: markdown
+        title: Client collegati
+        content: |
+          {% set clients = state_attr('sensor.deco_bedroom_clients_online', 'clients') or [] %}
+          {% if clients | count == 0 %}
+          _Nessun client collegato._
+          {% else %}
+          {% for c in clients %}
+          {% set tipo = (c.type or '') | lower %}
+          {% if 'phone' in tipo or 'mobile' in tipo %}📱
+          {% elif 'tablet' in tipo %}📟
+          {% elif 'tv' in tipo %}📺
+          {% elif 'laptop' in tipo or 'pc' in tipo or 'computer' in tipo %}💻
+          {% elif 'camera' in tipo %}📷
+          {% elif 'printer' in tipo %}🖨️
+          {% else %}🔹
+          {% endif %}
+          **{{ c.name or c.mac }}**  
+          `{{ c.ip or 'IP non disponibile' }}` · {{ c.connection or 'N/D' }} · {{ c.signal_quality or 'N/D' }}
+          {% endfor %}
+          {% endif %}
+
+  # ─────────────────────────────────────────────
+  # SALOTTO
+  # ─────────────────────────────────────────────
+  - type: grid
+    cards:
+      - type: custom:mushroom-template-card
+        entity: sensor.deco_living_room_clients_online
+        primary: 🛋 Salotto
+        secondary: >
+          {{ states('sensor.deco_living_room_connection') }} •
+          {{ states('sensor.deco_living_room_ip') }} •
+          {{ states('sensor.deco_living_room_clients_online') }} client
+        icon: mdi:access-point-network
+        icon_color: >
+          {% if states('sensor.deco_living_room_status') | lower == 'connected' %}
+            green
+          {% else %}
+            red
+          {% endif %}
+        layout: horizontal
+        multiline_secondary: true
+        fill_container: true
+        tap_action:
+          action: more-info
+
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: template
+            icon: mdi:connection
+            content: "{{ states('sensor.deco_living_room_connection') }}"
+            icon_color: cyan
+          - type: template
+            icon: mdi:signal
+            content: "{{ states('sensor.deco_living_room_quality') }}"
+            icon_color: green
+          - type: template
+            icon: mdi:source-branch
+            content: "{{ states('sensor.deco_living_room_parent_node') }}"
+            icon_color: purple
+
+      - type: markdown
+        title: Client collegati
+        content: |
+          {% set clients = state_attr('sensor.deco_living_room_clients_online', 'clients') or [] %}
+          {% if clients | count == 0 %}
+          _Nessun client collegato._
+          {% else %}
+          {% for c in clients %}
+          {% set tipo = (c.type or '') | lower %}
+          {% if 'phone' in tipo or 'mobile' in tipo %}📱
+          {% elif 'tablet' in tipo %}📟
+          {% elif 'tv' in tipo %}📺
+          {% elif 'laptop' in tipo or 'pc' in tipo or 'computer' in tipo %}💻
+          {% elif 'camera' in tipo %}📷
+          {% elif 'printer' in tipo %}🖨️
+          {% else %}🔹
+          {% endif %}
+          **{{ c.name or c.mac }}**  
+          `{{ c.ip or 'IP non disponibile' }}` · {{ c.connection or 'N/D' }} · {{ c.signal_quality or 'N/D' }}
+          {% endfor %}
+          {% endif %}
+
+cards: []

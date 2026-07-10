@@ -1,0 +1,53 @@
+{
+  "title": "Deco S1900 Local",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Collega la rete Deco",
+        "description": "Inserisci l'indirizzo IP del Deco master e la password amministratore dell'interfaccia web locale.",
+        "data": {
+          "host": "Indirizzo IP Deco master",
+          "password": "Password amministratore"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Aggiorna credenziali",
+        "description": "Inserisci la password amministratore attuale.",
+        "data": {
+          "password": "Password amministratore"
+        }
+      },
+      "reconfigure": {
+        "title": "Riconfigura Deco",
+        "description": "Modifica l'indirizzo del Deco master o la password amministratore.",
+        "data": {
+          "host": "Indirizzo IP Deco master",
+          "password": "Password amministratore"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossibile connettersi al Deco.",
+      "invalid_auth": "La password amministratore non è valida.",
+      "unknown": "Errore imprevisto."
+    },
+    "abort": {
+      "already_configured": "Questa rete Deco è già configurata.",
+      "reauth_successful": "Credenziali aggiornate correttamente.",
+      "reconfigure_successful": "Configurazione aggiornata correttamente."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opzioni Deco S1900 Local",
+        "description": "Le modifiche vengono applicate automaticamente dopo il salvataggio.",
+        "data": {
+          "scan_interval": "Intervallo aggiornamento (secondi)",
+          "max_clients": "Numero massimo di client dettagliati per entità",
+          "include_client_details": "Mostra i dettagli dei client negli attributi"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "title": "Deco S1900 Local",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to the Deco mesh",
+        "description": "Enter the IP address of the master Deco and the administrator password used by the local web interface.",
+        "data": {
+          "host": "Master Deco IP address",
+          "password": "Administrator password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Update credentials",
+        "description": "Enter the current administrator password.",
+        "data": {
+          "password": "Administrator password"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Deco",
+        "description": "Change the master Deco address or administrator password.",
+        "data": {
+          "host": "Master Deco IP address",
+          "password": "Administrator password"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to connect to the Deco.",
+      "invalid_auth": "The administrator password is not valid.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This Deco mesh is already configured.",
+      "reauth_successful": "Credentials updated successfully.",
+      "reconfigure_successful": "Configuration updated successfully."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Deco S1900 Local options",
+        "description": "Changes are applied automatically after saving.",
+        "data": {
+          "scan_interval": "Update interval (seconds)",
+          "max_clients": "Maximum client details per entity",
+          "include_client_details": "Expose client details in entity attributes"
+        }
+      }
+    }
+  }
+}

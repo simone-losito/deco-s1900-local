@@ -1,0 +1,15 @@
+{
+  "domain": "deco_s1900_local",
+  "name": "Deco S1900 Local",
+  "codeowners": [
+    "@simone-losito"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/simone-losito/deco-s1900-local",
+  "issue_tracker": "https://github.com/simone-losito/deco-s1900-local/issues",
+  "iot_class": "local_polling",
+  "requirements": [],
+  "version": "11.0.0",
+  "integration_type": "hub"
+}
