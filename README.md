@@ -98,7 +98,7 @@ The `examples/` directory contains a tablet-oriented Lovelace example.
 
 If this integration is useful, you can support its development:
 
-[![Buy Me a Coffee](https://img.buymeacoffee.com/button-api/?text=Offrimi%20un%20caff%C3%A8&emoji=%E2%98%95&slug=simonelosito&button_colour=00b8d4&font_colour=ffffff&font_family=Poppins&outline_colour=000000&coffee_colour=FFDD00)](https://www.buymeacoffee.com/simonelosito)
+[![Buy Me a Coffee](https://img.buymeacoffee.com/button-api/?text=Offrimi%20un%20caff%C3%A8&emoji=%E2%98%95&slug=simonelosito&button_colour=00b8d4&font_colour=ffffff&font_family=Poppins&outline_colour=000000&coffee_colour=FFDD00)](https://www.buymeacoffee.com/simone.losito)
 
 > Before publishing, create or confirm the Buy Me a Coffee profile `simonelosito`, or replace the link with your preferred support page.
 
