@@ -10,19 +10,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import (
-    CONF_INCLUDE_CLIENT_DETAILS,
-    CONF_MAX_CLIENTS,
-    DEFAULT_INCLUDE_CLIENT_DETAILS,
-    DEFAULT_MAX_CLIENTS,
-    DOMAIN,
-)
+from .const import DOMAIN
 from .coordinator import DecoS1900Coordinator
 from .helpers import (
-    client_summary,
     clients,
     clients_for_node,
-    clients_for_node_summary,
     connection_label,
     device_label,
     display_device_name,
@@ -66,6 +58,12 @@ def mesh_attributes(data: dict[str, Any]) -> dict[str, Any]:
         "clients_total": len(clients(data)),
         "firmware_consistent": firmware_consistent(data),
         "guest_wifi": guest_status(data),
+    }
+
+
+def nodes_attributes(data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        **mesh_attributes(data),
         "nodes": [
             {
                 "name": display_device_name(node),
@@ -88,6 +86,23 @@ def mesh_attributes(data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def clients_attributes(data: dict[str, Any], online_only: bool) -> dict[str, Any]:
+    selected_clients = online_clients(data) if online_only else clients(data)
+    return {
+        "clients_count": len(selected_clients),
+        "by_node": [
+            {
+                "name": display_device_name(node),
+                "role": node.get("role"),
+                "clients": len(
+                    clients_for_node(data, node.get("device_id") or "", online_only)
+                ),
+            }
+            for node in devices(data)
+        ],
+    }
+
+
 @dataclass(frozen=True, kw_only=True)
 class DecoSensorDescription(SensorEntityDescription):
     value_fn: Callable[[dict[str, Any]], Any]
@@ -97,10 +112,10 @@ class DecoSensorDescription(SensorEntityDescription):
 SENSORS = [
     DecoSensorDescription(key="mesh_status", name="Deco Mesh Status", icon="mdi:access-point-network", value_fn=mesh_status, attr_fn=mesh_attributes),
     DecoSensorDescription(key="mesh_quality", name="Deco Mesh Quality", icon="mdi:signal-cellular-3", value_fn=mesh_quality, attr_fn=mesh_attributes),
-    DecoSensorDescription(key="nodes", name="Deco Nodes", icon="mdi:router-network", value_fn=lambda d: len(devices(d)), attr_fn=mesh_attributes),
-    DecoSensorDescription(key="clients_online", name="Deco Clients Online", icon="mdi:account-network", value_fn=lambda d: len(online_clients(d)), attr_fn=lambda d: {"clients": client_summary(d, True)}),
-    DecoSensorDescription(key="clients_total", name="Deco Clients Total", icon="mdi:devices", value_fn=lambda d: len(clients(d)), attr_fn=lambda d: {"clients": client_summary(d, False)}),
-    DecoSensorDescription(key="guest_wifi", name="Deco Guest WiFi", icon="mdi:wifi-lock", value_fn=guest_status, attr_fn=lambda d: {"wireless_preview": str(d.get("wireless"))[:2500]}),
+    DecoSensorDescription(key="nodes", name="Deco Nodes", icon="mdi:router-network", value_fn=lambda d: len(devices(d)), attr_fn=nodes_attributes),
+    DecoSensorDescription(key="clients_online", name="Deco Clients Online", icon="mdi:account-network", value_fn=lambda d: len(online_clients(d)), attr_fn=lambda d: clients_attributes(d, True)),
+    DecoSensorDescription(key="clients_total", name="Deco Clients Total", icon="mdi:devices", value_fn=lambda d: len(clients(d)), attr_fn=lambda d: clients_attributes(d, False)),
+    DecoSensorDescription(key="guest_wifi", name="Deco Guest WiFi", icon="mdi:wifi-lock", value_fn=guest_status),
     DecoSensorDescription(key="wan_ip", name="Deco WAN IP", icon="mdi:wan", value_fn=lambda d: ip_info(wan(d)).get("ip", ""), attr_fn=lambda d: {"gateway": ip_info(wan(d)).get("gateway", ""), "mask": ip_info(wan(d)).get("mask", ""), "dns1": ip_info(wan(d)).get("dns1", ""), "dns2": ip_info(wan(d)).get("dns2", ""), "dial_type": wan(d).get("dial_type", ""), "mtu": wan(d).get("mtu_size", "")}),
     DecoSensorDescription(key="lan_ip", name="Deco LAN IP", icon="mdi:lan", value_fn=lambda d: ip_info(lan(d)).get("ip", ""), attr_fn=lambda d: {"mask": ip_info(lan(d)).get("mask", "")}),
 ]
@@ -141,18 +156,7 @@ class DecoSensor(CoordinatorEntity[DecoS1900Coordinator], SensorEntity):
     def extra_state_attributes(self) -> dict[str, Any]:
         if not self.entity_description.attr_fn:
             return {}
-        attrs = self.entity_description.attr_fn(self.coordinator.data or {})
-        if self.entity_description.key not in ("clients_online", "clients_total"):
-            return attrs
-        if not self.entry.options.get(
-            CONF_INCLUDE_CLIENT_DETAILS,
-            DEFAULT_INCLUDE_CLIENT_DETAILS,
-        ):
-            return {}
-        limit = self.entry.options.get(CONF_MAX_CLIENTS, DEFAULT_MAX_CLIENTS)
-        if isinstance(attrs.get("clients"), list):
-            attrs["clients"] = attrs["clients"][:limit]
-        return attrs
+        return self.entity_description.attr_fn(self.coordinator.data or {})
 
 
 class DecoNodeSensor(CoordinatorEntity[DecoS1900Coordinator], SensorEntity):
@@ -221,21 +225,9 @@ class DecoNodeSensor(CoordinatorEntity[DecoS1900Coordinator], SensorEntity):
             "parent": "Internet" if node.get("role") == "master" else device_label(data, node.get("parent_device_id") or ""),
         }
         if self.metric == "client_count":
-            all_clients = clients_for_node_summary(
-                data,
-                node.get("device_id") or "",
-                True,
+            attrs["clients_total_on_this_deco"] = len(
+                clients_for_node(data, node.get("device_id") or "", True)
             )
-            attrs["clients_total_on_this_deco"] = len(all_clients)
-            if self.entry.options.get(
-                CONF_INCLUDE_CLIENT_DETAILS,
-                DEFAULT_INCLUDE_CLIENT_DETAILS,
-            ):
-                limit = self.entry.options.get(
-                    CONF_MAX_CLIENTS,
-                    DEFAULT_MAX_CLIENTS,
-                )
-                attrs["clients"] = all_clients[:limit]
         return attrs
 
     @property

@@ -10,17 +10,22 @@ from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.const import CONF_HOST, CONF_PASSWORD
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.selector import (
+    TextSelector,
+    TextSelectorConfig,
+    TextSelectorType,
+)
 
 from .api import DecoAuthError, DecoConnectionError, DecoS1900Api
 from .const import (
-    CONF_INCLUDE_CLIENT_DETAILS,
-    CONF_MAX_CLIENTS,
     CONF_SCAN_INTERVAL,
-    DEFAULT_INCLUDE_CLIENT_DETAILS,
-    DEFAULT_MAX_CLIENTS,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     MIN_SCAN_INTERVAL,
+)
+
+PASSWORD_SELECTOR = TextSelector(
+    TextSelectorConfig(type=TextSelectorType.PASSWORD, autocomplete="current-password")
 )
 
 
@@ -71,8 +76,6 @@ class DecoS1900ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     data={CONF_HOST: host, CONF_PASSWORD: password},
                     options={
                         CONF_SCAN_INTERVAL: DEFAULT_SCAN_INTERVAL,
-                        CONF_MAX_CLIENTS: DEFAULT_MAX_CLIENTS,
-                        CONF_INCLUDE_CLIENT_DETAILS: DEFAULT_INCLUDE_CLIENT_DETAILS,
                     },
                 )
 
@@ -80,8 +83,8 @@ class DecoS1900ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_HOST, default="192.168.178.68"): str,
-                    vol.Required(CONF_PASSWORD): str,
+                    vol.Required(CONF_HOST): str,
+                    vol.Required(CONF_PASSWORD): PASSWORD_SELECTOR,
                 }
             ),
             errors=errors,
@@ -125,7 +128,7 @@ class DecoS1900ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reauth_confirm",
-            data_schema=vol.Schema({vol.Required(CONF_PASSWORD): str}),
+            data_schema=vol.Schema({vol.Required(CONF_PASSWORD): PASSWORD_SELECTOR}),
             errors=errors,
         )
 
@@ -165,7 +168,7 @@ class DecoS1900ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_HOST,
                         default=entry.data[CONF_HOST],
                     ): str,
-                    vol.Required(CONF_PASSWORD): str,
+                    vol.Required(CONF_PASSWORD): PASSWORD_SELECTOR,
                 }
             ),
             errors=errors,
@@ -202,20 +205,6 @@ class DecoS1900OptionsFlow(config_entries.OptionsFlowWithReload):
                     vol.Coerce(int),
                     vol.Range(min=MIN_SCAN_INTERVAL, max=3600),
                 ),
-                vol.Required(
-                    CONF_MAX_CLIENTS,
-                    default=self.config_entry.options.get(
-                        CONF_MAX_CLIENTS,
-                        DEFAULT_MAX_CLIENTS,
-                    ),
-                ): vol.All(vol.Coerce(int), vol.Range(min=10, max=200)),
-                vol.Required(
-                    CONF_INCLUDE_CLIENT_DETAILS,
-                    default=self.config_entry.options.get(
-                        CONF_INCLUDE_CLIENT_DETAILS,
-                        DEFAULT_INCLUDE_CLIENT_DETAILS,
-                    ),
-                ): bool,
             }
         )
 

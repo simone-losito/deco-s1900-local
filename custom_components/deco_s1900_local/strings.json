@@ -43,9 +43,7 @@
         "title": "Deco S1900 Local options",
         "description": "Changes are applied automatically after saving.",
         "data": {
-          "scan_interval": "Update interval (seconds)",
-          "max_clients": "Maximum client details per entity",
-          "include_client_details": "Expose client details in entity attributes"
+          "scan_interval": "Update interval (seconds)"
         }
       }
     }
