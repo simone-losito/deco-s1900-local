@@ -1,7 +1,6 @@
 """Shared helpers for Deco S1900 Local Enterprise."""
 from __future__ import annotations
 
-import base64
 from typing import Any
 
 
@@ -32,17 +31,6 @@ def title_name(value: Any) -> str:
         return ""
     text = str(value).replace("_", " ").strip()
     return " ".join(part[:1].upper() + part[1:] for part in text.split())
-
-
-def decode_name(value: Any) -> str:
-    if not value:
-        return ""
-    if not isinstance(value, str):
-        return str(value)
-    try:
-        return base64.b64decode(value + "=" * (-len(value) % 4), validate=False).decode("utf-8", "replace").strip() or value
-    except Exception:
-        return value
 
 
 def device_name(device: dict[str, Any]) -> str:
@@ -134,34 +122,6 @@ def clients_for_node(data: dict[str, Any], device_id: str, online_only: bool = T
     return [client for client in source if client_device_id(client) == device_id]
 
 
-def client_row(data: dict[str, Any], client: dict[str, Any]) -> dict[str, Any]:
-    linked = client_link(client)
-    signal = linked.get("signal_level") or {}
-    return {
-        "name": decode_name(client.get("name")),
-        "ip": client.get("ip") or "",
-        "mac": client.get("mac") or "",
-        "type": client.get("client_type") or "",
-        "online": client.get("online"),
-        "deco": device_label(data, linked.get("device_id") or ""),
-        "connection": connection_label(linked.get("connection_type")),
-        "signal_2_4": signal.get("band2_4"),
-        "signal_5": signal.get("band5"),
-        "signal_quality": signal_text(max(signal.get("band2_4") or 0, signal.get("band5") or 0)),
-        "priority": client.get("enable_priority"),
-        "isolation": client.get("enable_isolation"),
-    }
-
-
-def client_summary(data: dict[str, Any], online_only: bool = True) -> list[dict[str, Any]]:
-    selected = online_clients(data) if online_only else clients(data)
-    return [client_row(data, client) for client in selected[:200]]
-
-
-def clients_for_node_summary(data: dict[str, Any], device_id: str, online_only: bool = True) -> list[dict[str, Any]]:
-    return [client_row(data, client) for client in clients_for_node(data, device_id, online_only)[:100]]
-
-
 def topology_text(data: dict[str, Any]) -> str:
     nodes = devices(data)
     if not nodes:
@@ -179,7 +139,7 @@ def topology_text(data: dict[str, Any]) -> str:
         conn = connection_label(node.get("connection_type"), node.get("role"))
         online = len(clients_for_node(data, node.get("device_id") or "", True))
         lines.append(f"      ├─ {display_device_name(node)} · {conn} · {node.get('ip', '')} · clients:{online} · parent:{parent}")
-    return "\\n".join(lines)
+    return "\n".join(lines)
 
 
 def firmware_consistent(data: dict[str, Any]) -> bool:

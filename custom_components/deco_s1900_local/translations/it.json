@@ -43,9 +43,7 @@
         "title": "Opzioni Deco S1900 Local",
         "description": "Le modifiche vengono applicate automaticamente dopo il salvataggio.",
         "data": {
-          "scan_interval": "Intervallo aggiornamento (secondi)",
-          "max_clients": "Numero massimo di client dettagliati per entità",
-          "include_client_details": "Mostra i dettagli dei client negli attributi"
+          "scan_interval": "Intervallo aggiornamento (secondi)"
         }
       }
     }
